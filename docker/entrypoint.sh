@@ -182,21 +182,28 @@ PY=python3
 # Select Nginx Configuration based on API_PROXY_SCHEME
 # -----------------------------------------------------------------------------
 NGINX_CONF_DIR="/etc/nginx/conf.d"
+apply_nginx_conf() {
+    local src_name="$1"
+    if [ -f "${NGINX_CONF_DIR}/${src_name}" ]; then
+        cp -f "${NGINX_CONF_DIR}/${src_name}" "${NGINX_CONF_DIR}/ragflow.conf"
+        echo "Applied nginx config: ${src_name}"
+    elif [ -f "${NGINX_CONF_DIR}/ragflow.conf" ]; then
+        echo "Keep existing nginx config: ragflow.conf"
+    else
+        echo "ERROR: nginx config missing (${src_name})" >&2
+        exit 1
+    fi
+}
 if [ -n "$API_PROXY_SCHEME" ]; then
     if [[ "${API_PROXY_SCHEME}" == "hybrid" ]]; then
-        cp -f "$NGINX_CONF_DIR/ragflow.conf.hybrid" "$NGINX_CONF_DIR/ragflow.conf"
-        echo "Applied nginx config: ragflow.conf.hybrid"
+        apply_nginx_conf "ragflow.conf.hybrid"
     elif [[ "${API_PROXY_SCHEME}" == "go" ]]; then
-        cp -f "$NGINX_CONF_DIR/ragflow.conf.golang" "$NGINX_CONF_DIR/ragflow.conf"
-        echo "Applied nginx config: ragflow.conf.golang (default)"
+        apply_nginx_conf "ragflow.conf.golang"
     else
-        cp -f "$NGINX_CONF_DIR/ragflow.conf.python" "$NGINX_CONF_DIR/ragflow.conf"
-        echo "Applied nginx config: ragflow.conf.python"
+        apply_nginx_conf "ragflow.conf.python"
     fi
 else
-    # Default to python backend
-    cp -f "$NGINX_CONF_DIR/ragflow.conf.python" "$NGINX_CONF_DIR/ragflow.conf"
-    echo "Default: applied nginx config: ragflow.conf.python"
+    apply_nginx_conf "ragflow.conf.python"
 fi
 
 # -----------------------------------------------------------------------------
