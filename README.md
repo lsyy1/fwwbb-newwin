@@ -80,12 +80,21 @@ docker compose logs -f ragflow-cpu
 
 ## 访问地址
 
-| 服务 | 地址 |
-|------|------|
-| 前端首页 | http://localhost:9222 |
-| 数据池 | http://localhost:9222/#/data-pool |
-| 智能填表 | http://localhost:9222/#/form-fill |
-| 后端 API | http://localhost:9380 |
+| 服务 | 本机访问 | 局域网/远程访问（将 `localhost` 换成服务器 IP） |
+|------|----------|--------------------------------------------------|
+| 前端首页 | http://localhost:9222 | http://\<服务器IP\>:9222 |
+| 数据池 | http://localhost:9222/#/data-pool | http://\<服务器IP\>:9222/#/data-pool |
+| 智能填表 | http://localhost:9222/#/form-fill | http://\<服务器IP\>:9222/#/form-fill |
+| 后端 API | http://localhost:9380 | http://\<服务器IP\>:9380 |
+
+> **笔记本访问服务器**：必须用 `http://10.x.x.x:9222`，不能用 `localhost`（localhost 指向笔记本自己）。
+
+### 远程访问打不开？
+
+1. 确认端口在监听：`ss -tlnp | grep 9222`（应看到 `0.0.0.0:9222`）
+2. 放行防火墙：`sudo ufw allow 9222/tcp && sudo ufw allow 9380/tcp`
+3. 云服务器还需在安全组放行 9222、9380
+4. 更新部署包后重新启动：`cd docker && docker compose up -d --force-recreate ragflow-cpu`
 
 ---
 
