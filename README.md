@@ -3,7 +3,6 @@
 > 基于 [RAGFlow](https://github.com/infiniflow/ragflow) 的多源文档智能填表方案：用**自然语言描述需求**，自动将 Word / Excel / TXT / MD 等数据源填入模板，支持多文档聚合与规则 + 大模型混合解析。
 
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io%2Flsyy1%2Fragflow--fwwb%3A2.0.0-blue)](https://github.com/lsyy1/fwwbb-newwin/pkgs/container/ragflow-fwwb)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
@@ -191,16 +190,3 @@ fwwbb-newwin/
 
 **Q：填表结果不准确？**  
 检查数据池是否包含正确源文件、用户需求是否描述清晰、大模型是否配置正常。
-
----
-
-## 相关链接
-
-- **初赛项目（静态 Demo + 部署说明）**：[fwwb-rag-file](https://github.com/lsyy1/fwwb-rag-file)
-- **在线 Demo（仅前端）**：[GitHub Pages](https://lsyy1.github.io/fwwb-rag-file/)
-
----
-
-## License
-
-MIT License
