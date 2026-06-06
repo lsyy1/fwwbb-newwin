@@ -26,24 +26,49 @@ if [ ! -f .env ]; then
   cp .env.example .env
 fi
 
+# 从 .env 加载 COMPOSE_PROFILES（elasticsearch,cpu）
+set -a
+# shellcheck disable=SC1091
+source .env
+set +a
+
 echo ""
-echo "🚀 拉取镜像（首次可能较久）..."
-docker compose --profile cpu pull
+echo "🚀 拉取镜像（首次可能较久，约 5GB 应用镜像 + ES/MySQL 等）..."
+docker compose pull
 
 echo ""
 echo "🚀 启动服务..."
-docker compose --profile cpu up -d
+docker compose up -d
 
 echo ""
-echo "⏳ 等待服务就绪（约 2~3 分钟）..."
-sleep 30
+echo "⏳ 等待服务就绪（约 2~5 分钟）..."
+WEB_PORT="${SVR_WEB_HTTP_PORT:-9222}"
+API_PORT="${SVR_HTTP_PORT:-9380}"
+ready=0
+for i in $(seq 1 60); do
+  sleep 5
+  code=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 3 "http://127.0.0.1:${WEB_PORT}/" 2>/dev/null || echo "000")
+  if [ "${code}" != "000" ] && [ "${code}" != "502" ] && [ "${code}" != "503" ]; then
+    ready=1
+    break
+  fi
+  echo "  等待中... (${i}/60)"
+done
 
 echo ""
-echo "✅ 部署完成！"
+if [ "${ready}" -eq 1 ]; then
+  echo "✅ 部署完成！"
+else
+  echo "⚠️  容器已启动，但前端尚未完全就绪，请稍后再访问或查看日志。"
+fi
+
 echo ""
-echo "  前端:     http://localhost:9222"
-echo "  智能填表: http://localhost:9222/#/form-fill"
-echo "  API:      http://localhost:9380"
+echo "  前端:     http://localhost:${WEB_PORT}"
+echo "  数据池:   http://localhost:${WEB_PORT}/#/data-pool"
+echo "  智能填表: http://localhost:${WEB_PORT}/#/form-fill"
+echo "  API:      http://localhost:${API_PORT}"
+echo ""
+echo "  首次使用: 注册登录 → 头像 → 模型提供商 → 配置 API Key"
 echo ""
 echo "  查看状态: cd docker && docker compose ps"
 echo "  查看日志: cd docker && docker compose logs -f ragflow-cpu"

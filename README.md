@@ -64,11 +64,11 @@ chmod +x deploy.sh
 git clone https://github.com/lsyy1/fwwbb-newwin.git
 cd fwwbb-newwin/docker
 cp .env.example .env
-docker compose --profile cpu pull
-docker compose --profile cpu up -d
+docker compose pull
+docker compose up -d
 ```
 
-首次启动约需 **2～3 分钟**，可通过以下命令查看状态：
+首次启动约需 **2～5 分钟**，可通过以下命令查看状态：
 
 ```bash
 cd docker
@@ -144,6 +144,14 @@ docker pull ghcr.io/lsyy1/ragflow-fwwb:2.0.0
 
 ```bash
 echo "<YOUR_GITHUB_TOKEN>" | docker login ghcr.io -u lsyy1 --password-stdin
+```
+
+推送完成后，请在 GitHub → Packages → ragflow-fwwb → **Package settings → Change visibility → Public**，否则评委无法匿名拉取。
+
+**备用镜像**（若 GHCR 不可用，可在 `docker/.env` 中修改）：
+
+```bash
+RAGFLOW_IMAGE=lsyy1/ragflow-fwwb:2.0.0
 ```
 
 ---
